@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+import plotly.express as px
 
 def get_activity_suggestions(mood):
     suggestions = {
@@ -22,13 +20,12 @@ def track_mood(data, mood, timestamp):
     return data
 
 def plot_mood_over_time(data):
-    mood_counts = data["Mood"].value_counts()
-    fig, ax = plt.subplots()
-    ax.bar(mood_counts.index, mood_counts.values)
-    ax.set_xlabel("Mood")
-    ax.set_ylabel("Count")
-    ax.set_title("Mood Distribution Over Time")
-    st.pyplot(fig)
+    mood_counts = data["Mood"].value_counts().reset_index()
+    mood_counts.columns = ["Mood", "Count"]
+
+    fig = px.bar(mood_counts, x="Mood", y="Count", color="Mood", labels={"Count": "Count"}, title="Mood Distribution Over Time")
+    fig.update_layout(showlegend=False)
+    st.plotly_chart(fig)
 
 def main():
     st.title("Mental Health Tracker")
